@@ -32,13 +32,13 @@ import {PageProps} from "@/types";
 const data = {
   user: {
     id: 0,
-    name: "Admin CRM",
+    name: "AI-Smart-Agency-Dashboard",
     email: "admin@kita.com",
     avatar: "/avatars/admin.jpg",
   },
   teams: [
     {
-      name: "Admin CRM",
+      name: "AI-Smart-Agency-Dashboard",
       logo: Command,
       plan: "Project Kita",
     },

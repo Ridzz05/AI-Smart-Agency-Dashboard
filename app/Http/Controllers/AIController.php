@@ -116,7 +116,7 @@ class AIController extends Controller
             ->map(fn($t) => "- IDR " . number_format($t->amount, 0, ',', '.') . " for client {$t->customer->name} (Status: {$t->status})")
             ->implode("\n");
 
-        return "You are 'KitaAI', a Senior Business & CRM Analyst for the 'AdminCRM-Kita' system. 
+        return "You are 'KitaAI', a Senior Business & CRM Analyst for the 'AI-Smart-Agency-Dashboard' system. 
         Your primary goal is to help the agency administrator manage their business effectively.
 
         TEAM ROLES:

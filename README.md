@@ -1,6 +1,6 @@
-# AdminCRM-Kita 🚀
+# AI-Smart-Agency-Dashboard 🚀
 
-AdminCRM-Kita adalah sistem manajemen hubungan pelanggan (CRM) dan pengelolaan bisnis modern yang dirancang khusus untuk agensi dan penyedia jasa. Dibangun dengan teknologi mutakhir untuk memberikan pengalaman pengguna yang cepat, responsif, dan elegan.
+AI-Smart-Agency-Dashboard adalah sistem manajemen hubungan pelanggan (CRM) dan pengelolaan bisnis modern yang dirancang khusus untuk agensi dan penyedia jasa. Dibangun dengan teknologi mutakhir untuk memberikan pengalaman pengguna yang cepat, responsif, dan elegan.
 
 ![Dashboard Preview](./public/preview.png)
 
@@ -45,7 +45,7 @@ AdminCRM-Kita adalah sistem manajemen hubungan pelanggan (CRM) dan pengelolaan b
 1.  **Clone Repositori**:
     ```bash
     git clone https://github.com/yourusername/AdminCRM-Kita.git
-    cd AdminCRM-Kita
+    cd AI-Smart-Agency-Dashboard
     ```
 
 2.  **Instal Dependensi**:
