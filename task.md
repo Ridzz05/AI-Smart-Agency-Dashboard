@@ -5,17 +5,17 @@
     - [x] Buat Migration & Model `Project`
     - [x] Buat Migration & Model `Transaction`
     - [x] Setup relasi antar Model
-- [ ] **Tahap 2: Routing & Controllers**
-    - [ ] Buat `CustomerController`
-    - [ ] Buat `ProjectController`
-    - [ ] Buat `TransactionController`
-    - [ ] Daftarkan rute di `web.php`
-- [ ] **Tahap 3: Frontend UI (Customers)**
-    - [ ] Implementasi `DataTable` untuk Customers
-    - [ ] Form Tambah/Edit Customer
-- [ ] **Tahap 4: Frontend UI (Projects & Transactions)**
-    - [ ] Halaman Projects (dengan Progress Bar)
-    - [ ] Halaman Transactions (dengan Upload Attachment)
-- [ ] **Tahap 5: Dashboard & Analytics**
-    - [ ] Integrasi `Recharts`
-    - [ ] Ringkasan Metrik (Omzet, Deadline)
+- [x] **Tahap 2: Routing & Controllers**
+    - [x] Buat `CustomerController`
+    - [x] Buat `ProjectController`
+    - [x] Buat `TransactionController`
+    - [x] Daftarkan rute di `web.php`
+- [x] **Tahap 3: Frontend UI (Customers)**
+    - [x] Implementasi `DataTable` untuk Customers
+    - [x] Form Tambah/Edit Customer
+- [x] **Tahap 4: Frontend UI (Projects & Transactions)**
+    - [x] Halaman Projects (dengan Progress Bar)
+    - [x] Halaman Transactions (dengan Upload Attachment)
+- [x] **Tahap 5: Dashboard & Analytics**
+    - [x] Integrasi `Recharts`
+    - [x] Ringkasan Metrik (Omzet, Deadline)

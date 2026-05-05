@@ -65,6 +65,11 @@ const data = {
       url: route('transactions.index'),
       icon: PieChart,
     },
+    {
+      title: "AI Assistant",
+      url: route('ai.index'),
+      icon: Send,
+    },
   ],
   navSecondary: [
     {
