@@ -1,10 +1,10 @@
 # Task List - AdminCRM-Kita
 
-- [ ] **Tahap 1: Backend Foundation**
-    - [ ] Buat Migration & Model `Customer`
-    - [ ] Buat Migration & Model `Project`
-    - [ ] Buat Migration & Model `Transaction`
-    - [ ] Setup relasi antar Model
+- [x] **Tahap 1: Backend Foundation**
+    - [x] Buat Migration & Model `Customer`
+    - [x] Buat Migration & Model `Project`
+    - [x] Buat Migration & Model `Transaction`
+    - [x] Setup relasi antar Model
 - [ ] **Tahap 2: Routing & Controllers**
     - [ ] Buat `CustomerController`
     - [ ] Buat `ProjectController`
