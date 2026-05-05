@@ -14,10 +14,12 @@ interface Message {
     content: string
 }
 
-export default function AIIndex() {
-    const [messages, setMessages] = useState<Message[]>([
-        { role: 'assistant', content: "Hello! I am your CRM AI Assistant. How can I help you today? I can analyze your projects, customers, or financial stats." }
-    ])
+export default function AIIndex({ initialMessages = [] }: { initialMessages?: Message[] }) {
+    const [messages, setMessages] = useState<Message[]>(
+        initialMessages.length > 0 
+        ? initialMessages 
+        : [{ role: 'assistant', content: "Hello! I am your CRM AI Assistant. How can I help you today? I can analyze your projects, customers, or financial stats." }]
+    )
     const [input, setInput] = useState("")
     const [isLoading, setIsLoading] = useState(false)
     const scrollRef = useRef<HTMLDivElement>(null)

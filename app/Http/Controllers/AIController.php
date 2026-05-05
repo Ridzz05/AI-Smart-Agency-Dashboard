@@ -2,24 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatMessage;
 use App\Models\Customer;
 use App\Models\Project;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AIController extends Controller
 {
     public function index()
     {
-        return Inertia::render('ai/index');
+        $messages = ChatMessage::where('user_id', Auth::id())
+            ->orWhereNull('user_id')
+            ->oldest()
+            ->get(['role', 'content']);
+
+        return Inertia::render('ai/index', [
+            'initialMessages' => $messages
+        ]);
     }
 
     public function chat(Request $request)
     {
         $request->validate([
             'message' => 'required|string',
+        ]);
+
+        // 1. Save User Message to Database
+        ChatMessage::create([
+            'role' => 'user',
+            'content' => $request->message,
+            'user_id' => Auth::id(),
         ]);
 
         $apiKey = config('services.openrouter.key');
@@ -54,7 +70,17 @@ class AIController extends Controller
             ]);
 
             if ($response->successful()) {
-                return response()->json($response->json());
+                $data = $response->json();
+                $aiContent = $data['choices'][0]['message']['content'];
+
+                // 2. Save AI Response to Database
+                ChatMessage::create([
+                    'role' => 'assistant',
+                    'content' => $aiContent,
+                    'user_id' => Auth::id(),
+                ]);
+
+                return response()->json($data);
             }
 
             return response()->json([
