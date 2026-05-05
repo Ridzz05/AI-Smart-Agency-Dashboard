@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from "react"
 import { Head } from "@inertiajs/react"
 import AuthenticatedLayout from "@/layouts/authenticated-layout"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Bot, Send, User, Loader2 } from "lucide-react"
 import axios from "axios"
+import ReactMarkdown from "react-markdown"
 
 interface Message {
     role: 'user' | 'assistant'
@@ -56,92 +57,106 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
     return (
         <AuthenticatedLayout>
             <Head title="AI Assistant" />
-            <div className="flex flex-col h-[calc(100vh-12rem)] max-w-4xl mx-auto py-6 px-4">
-                <Card className="flex-1 flex flex-col overflow-hidden shadow-xl border-t-4 border-t-primary">
-                    <CardHeader className="border-b bg-muted/30 py-4">
-                        <div className="flex items-center gap-3">
-                            <div className="bg-primary p-2 rounded-lg">
-                                <Bot className="h-6 w-6 text-primary-foreground" />
-                            </div>
-                            <div>
-                                <CardTitle className="text-xl">CRM AI Assistant</CardTitle>
-                                <p className="text-xs text-muted-foreground">Powered by Baidu Qianfan via OpenRouter</p>
-                            </div>
+            <div className="flex flex-col h-[calc(100vh-100px)] max-w-5xl mx-auto">
+                {/* Header Section */}
+                <div className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+                    <div className="flex items-center gap-3">
+                        <div className="bg-primary/10 p-2 rounded-xl">
+                            <Bot className="h-6 w-6 text-primary" />
                         </div>
-                    </CardHeader>
-                    
-                    <CardContent className="flex-1 overflow-hidden p-0">
-                        <ScrollArea className="h-full p-6" ref={scrollRef}>
-                            <div className="space-y-6">
-                                {messages.map((msg, i) => (
-                                    <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                        <div className={`flex gap-3 max-w-[80%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                            <Avatar className="h-9 w-9 border shadow-sm">
-                                                {msg.role === 'assistant' ? (
-                                                    <>
-                                                        <AvatarImage src="" />
-                                                        <AvatarFallback className="bg-primary text-primary-foreground">
-                                                            <Bot className="h-5 w-5" />
-                                                        </AvatarFallback>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <AvatarImage src="" />
-                                                        <AvatarFallback className="bg-secondary text-secondary-foreground">
-                                                            <User className="h-5 w-5" />
-                                                        </AvatarFallback>
-                                                    </>
-                                                )}
-                                            </Avatar>
-                                            <div className={`rounded-2xl px-4 py-3 text-sm shadow-sm leading-relaxed ${
-                                                msg.role === 'user' 
-                                                ? 'bg-primary text-primary-foreground rounded-tr-none' 
-                                                : 'bg-muted border rounded-tl-none'
-                                            }`}>
-                                                {msg.content}
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                                {isLoading && (
-                                    <div className="flex justify-start">
-                                        <div className="flex gap-3">
-                                            <Avatar className="h-9 w-9 border animate-pulse">
+                        <div>
+                            <h1 className="text-lg font-bold leading-none">KitaAI Assistant</h1>
+                            <p className="text-xs text-muted-foreground mt-1">Sistem Cerdas AI-Smart-Agency-Dashboard</p>
+                        </div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
+                        <span className="text-xs font-medium text-muted-foreground">AI Online</span>
+                    </div>
+                </div>
+                
+                {/* Chat Messages Area */}
+                <div className="flex-1 overflow-hidden">
+                    <ScrollArea className="h-full px-6 py-8" ref={scrollRef}>
+                        <div className="space-y-6 max-w-3xl mx-auto">
+                            {messages.map((msg, i) => (
+                                <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                        <Avatar className={`h-9 w-9 border-2 ${msg.role === 'assistant' ? 'border-primary/20' : 'border-secondary/20'}`}>
+                                            {msg.role === 'assistant' ? (
                                                 <AvatarFallback className="bg-primary text-primary-foreground">
                                                     <Bot className="h-5 w-5" />
                                                 </AvatarFallback>
-                                            </Avatar>
-                                            <div className="bg-muted border rounded-2xl rounded-tl-none px-4 py-3 shadow-sm flex items-center gap-2">
-                                                <Loader2 className="h-4 w-4 animate-spin text-primary" />
-                                                <span className="text-sm text-muted-foreground">Thinking...</span>
+                                            ) : (
+                                                <AvatarFallback className="bg-secondary text-secondary-foreground">
+                                                    <User className="h-5 w-5" />
+                                                </AvatarFallback>
+                                            )}
+                                        </Avatar>
+                                        <div className={`relative rounded-2xl px-5 py-3.5 text-sm shadow-sm leading-relaxed ${
+                                            msg.role === 'user' 
+                                            ? 'bg-primary text-primary-foreground rounded-tr-none' 
+                                            : 'bg-muted/50 border rounded-tl-none'
+                                        }`}>
+                                            <div className={`prose prose-sm max-w-none ${msg.role === 'user' ? 'prose-invert' : 'dark:prose-invert'}`}>
+                                                <ReactMarkdown>{msg.content}</ReactMarkdown>
                                             </div>
                                         </div>
                                     </div>
-                                )}
-                            </div>
-                        </ScrollArea>
-                    </CardContent>
+                                </div>
+                            ))}
+                            {isLoading && (
+                                <div className="flex justify-start">
+                                    <div className="flex gap-4">
+                                        <Avatar className="h-9 w-9 border-2 border-primary/20 animate-pulse">
+                                            <AvatarFallback className="bg-primary text-primary-foreground">
+                                                <Bot className="h-5 w-5" />
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="bg-muted/50 border rounded-2xl rounded-tl-none px-5 py-3.5 shadow-sm flex items-center gap-3">
+                                            <div className="flex gap-1">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.3s]"></span>
+                                                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce [animation-delay:-0.15s]"></span>
+                                                <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce"></span>
+                                            </div>
+                                            <span className="text-xs font-medium text-muted-foreground italic">Menganalisis sistem...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
+                </div>
 
-                    <CardFooter className="p-4 border-t bg-muted/30">
-                        <form onSubmit={sendMessage} className="flex w-full gap-3">
+                {/* Input Section */}
+                <div className="px-6 py-6 border-t bg-background/95 backdrop-blur">
+                    <div className="max-w-3xl mx-auto">
+                        <form onSubmit={sendMessage} className="relative flex items-center">
                             <Input 
-                                placeholder="Type your message here..." 
+                                placeholder="Tanyakan apa saja tentang bisnis Anda..." 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 disabled={isLoading}
-                                className="flex-1 bg-background"
+                                className="pr-16 h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/30 shadow-inner"
                             />
-                            <Button type="submit" disabled={isLoading || !input.trim()} className="px-6">
-                                {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                                <span className="ml-2 hidden sm:inline">Send</span>
-                            </Button>
+                            <div className="absolute right-2 flex items-center gap-1">
+                                <Button 
+                                    type="submit" 
+                                    size="icon"
+                                    disabled={isLoading || !input.trim()} 
+                                    className="h-10 w-10 rounded-xl transition-all active:scale-95"
+                                >
+                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                </Button>
+                            </div>
                         </form>
-                    </CardFooter>
-                </Card>
-                
-                <p className="text-center text-xs text-muted-foreground mt-4 italic">
-                    Tip: Ask about your current revenue, project progress, or active clients.
-                </p>
+                        <div className="flex justify-center gap-4 mt-3">
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold">
+                                Tip: Tanyakan "Berapa total pendapatan bulan ini?"
+                            </p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </AuthenticatedLayout>
     )
