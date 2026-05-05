@@ -31,6 +31,7 @@ import {PageProps} from "@/types";
 
 const data = {
   user: {
+    id: 0,
     name: "Admin CRM",
     email: "admin@kita.com",
     avatar: "/avatars/admin.jpg",
@@ -87,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={auth.user ?? data.user} />
       </SidebarFooter>
     </Sidebar>
   )
