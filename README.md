@@ -40,8 +40,3 @@ php artisan serve
 ```
 
 Access the application in your browser at `http://localhost:8000` by default.
-
-## Contact
-
-If you have any questions, feedback, or support requests, you can reach me here [mahmudbappy.pri@gmail.com](https://github.com/mahmudz/laravel-shadcn-app-panel.git)
-# Smart-Agency
