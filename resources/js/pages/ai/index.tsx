@@ -57,7 +57,7 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
     return (
         <AuthenticatedLayout>
             <Head title="AI Assistant" />
-            <div className="flex flex-col h-[calc(100vh-100px)] max-w-5xl mx-auto">
+            <div className="flex flex-col h-[calc(100vh-65px)] lg:h-[calc(100vh-100px)] w-full max-w-5xl mx-auto">
                 {/* Header Section */}
                 <div className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                     <div className="flex items-center gap-3">
@@ -76,12 +76,12 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                 </div>
                 
                 {/* Chat Messages Area */}
-                <div className="flex-1 overflow-hidden">
-                    <ScrollArea className="h-full px-6 py-8" ref={scrollRef}>
-                        <div className="space-y-6 max-w-3xl mx-auto">
+                <div className="flex-1 overflow-hidden bg-background">
+                    <ScrollArea className="h-full px-3 md:px-6 py-6" ref={scrollRef}>
+                        <div className="space-y-6 w-full max-w-4xl mx-auto">
                             {messages.map((msg, i) => (
                                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`flex gap-4 max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
+                                    <div className={`flex gap-2 md:gap-4 max-w-[95%] md:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
                                         <Avatar className={`h-9 w-9 border-2 ${msg.role === 'assistant' ? 'border-primary/20' : 'border-secondary/20'}`}>
                                             {msg.role === 'assistant' ? (
                                                 <AvatarFallback className="bg-primary text-primary-foreground">
@@ -129,8 +129,8 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                 </div>
 
                 {/* Input Section */}
-                <div className="px-6 py-6 border-t bg-background/95 backdrop-blur">
-                    <div className="max-w-3xl mx-auto">
+                <div className="px-3 md:px-6 py-4 md:py-6 border-t bg-background/95 backdrop-blur">
+                    <div className="max-w-4xl mx-auto">
                         <form onSubmit={sendMessage} className="relative flex items-center">
                             <Input 
                                 placeholder="Tanyakan apa saja tentang bisnis Anda..." 

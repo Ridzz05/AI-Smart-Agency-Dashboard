@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { Plus, Trash2, Edit } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
+import { Slider } from "@/components/ui/slider"
 import {
     Field,
     FieldDescription,
@@ -27,14 +28,14 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-    SheetFooter,
-} from "@/components/ui/sheet"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -49,6 +50,15 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useState } from "react"
+import { format } from "date-fns"
+import { Calendar as CalendarIcon, ChevronDown } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
+import {
+    Popover,
+    PopoverContent,
+    PopoverTrigger,
+} from "@/components/ui/popover"
+import { cn } from "@/lib/utils"
 
 interface Project {
     id: number;
@@ -127,7 +137,7 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
                         <p className="text-muted-foreground">Manage your active projects and track progress.</p>
                     </div>
                     
-                    <Sheet open={isOpen} onOpenChange={(open) => {
+                    <Dialog open={isOpen} onOpenChange={(open) => {
                         setIsOpen(open);
                         if (!open) {
                             setEditingProject(null);
@@ -135,19 +145,19 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
                             clearErrors();
                         }
                     }}>
-                        <SheetTrigger asChild>
+                        <DialogTrigger asChild>
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Add Project
                             </Button>
-                        </SheetTrigger>
-                        <SheetContent className="sm:max-w-[425px]">
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
                             <form onSubmit={onSubmit}>
-                                <SheetHeader>
-                                    <SheetTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</SheetTitle>
-                                    <SheetDescription>
+                                <DialogHeader>
+                                    <DialogTitle>{editingProject ? 'Edit Project' : 'Add New Project'}</DialogTitle>
+                                    <DialogDescription>
                                         Fill in the details below to {editingProject ? 'update the' : 'create a new'} project.
-                                    </SheetDescription>
-                                </SheetHeader>
+                                    </DialogDescription>
+                                </DialogHeader>
                                 <div className="grid gap-4 py-4">
                                     <Field>
                                         <FieldLabel htmlFor="customer_id">Customer</FieldLabel>
@@ -208,35 +218,55 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
                                         <div className="flex justify-between">
                                             <FieldLabel htmlFor="progress">Progress ({data.progress}%)</FieldLabel>
                                         </div>
-                                        <Input 
-                                            id="progress" 
-                                            type="range"
-                                            min="0"
-                                            max="100"
-                                            value={data.progress} 
-                                            onChange={e => setData('progress', parseInt(e.target.value))}
-                                        />
+                                        <div className="pt-2">
+                                            <Slider
+                                                id="progress"
+                                                min={0}
+                                                max={100}
+                                                step={1}
+                                                value={[data.progress]}
+                                                onValueChange={(value) => setData('progress', value[0])}
+                                            />
+                                        </div>
                                         {errors.progress && <FieldDescription className="text-red-500">{errors.progress}</FieldDescription>}
                                     </Field>
                                     <Field>
                                         <FieldLabel htmlFor="deadline">Deadline</FieldLabel>
-                                        <Input 
-                                            id="deadline" 
-                                            type="date"
-                                            value={data.deadline || ''} 
-                                            onChange={e => setData('deadline', e.target.value)}
-                                        />
+                                        <div className="flex flex-col gap-2 pt-1">
+                                            <Popover modal={true}>
+                                                <PopoverTrigger asChild>
+                                                    <Button
+                                                        variant={"outline"}
+                                                        className={cn(
+                                                            "w-full justify-start text-left font-normal h-10",
+                                                            !data.deadline && "text-muted-foreground"
+                                                        )}
+                                                    >
+                                                        <CalendarIcon className="mr-2 h-4 w-4" />
+                                                        {data.deadline ? format(new Date(data.deadline), "PPP") : <span>Pick a date</span>}
+                                                    </Button>
+                                                </PopoverTrigger>
+                                                <PopoverContent className="w-auto p-0" align="start">
+                                                    <Calendar
+                                                        mode="single"
+                                                        selected={data.deadline ? new Date(data.deadline) : undefined}
+                                                        onSelect={(date) => setData('deadline', date ? format(date, 'yyyy-MM-dd') : '')}
+                                                        initialFocus
+                                                    />
+                                                </PopoverContent>
+                                            </Popover>
+                                        </div>
                                         {errors.deadline && <FieldDescription className="text-red-500">{errors.deadline}</FieldDescription>}
                                     </Field>
                                 </div>
-                                <SheetFooter>
-                                    <Button type="submit" disabled={processing} className="w-full">
+                                <DialogFooter className="mt-6">
+                                    <Button type="submit" className="w-full" disabled={processing}>
                                         {editingProject ? 'Update Project' : 'Save Project'}
                                     </Button>
-                                </SheetFooter>
+                                </DialogFooter>
                             </form>
-                        </SheetContent>
-                    </Sheet>
+                        </DialogContent>
+                    </Dialog>
                 </div>
 
                 <div className="rounded-md border bg-card text-card-foreground shadow-sm">

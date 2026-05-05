@@ -4,9 +4,12 @@ import {
     Card,
     CardContent,
     CardDescription,
+    CardFooter,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
 import { Users, Briefcase, DollarSign, TrendingUp, Plus } from "lucide-react";
 import {
     BarChart,
@@ -19,7 +22,14 @@ import {
     PieChart,
     Pie,
     Cell,
+    LabelList,
 } from "recharts";
+import {
+    ChartContainer,
+    ChartTooltip,
+    ChartTooltipContent,
+    type ChartConfig,
+} from "@/components/ui/chart";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
@@ -29,6 +39,13 @@ export default function Dashboard({
     revenueData,
     activities,
 }: any) {
+    const chartConfig = {
+        total: {
+            label: "Revenue",
+            color: "#4f46e5",
+        },
+    } satisfies ChartConfig
+
     return (
         <AuthenticatedLayout header="Dashboard">
             <Head title="Dashboard" />
@@ -38,7 +55,7 @@ export default function Dashboard({
                 <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-8 text-white shadow-2xl border border-white/5">
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                         <div>
-                            <h2 className="text-3xl font-bold tracking-tight">Selamat Datang Kembali! 👋</h2>
+                            <h2 className="text-3xl font-bold tracking-tight">Welcome Gess! 👋</h2>
                             <p className="mt-2 text-slate-300 max-w-xl">
                                 Hari ini sistem memiliki <span className="font-semibold text-indigo-400">{stats?.totalProjects || 0} proyek</span> aktif. 
                                 Tetap semangat untuk <span className="font-semibold text-indigo-400">Ki, Jo, dan Nath</span> dalam mengelola agensi!
@@ -105,8 +122,16 @@ export default function Dashboard({
                             <TrendingUp className="h-4 w-4 text-muted-foreground" />
                         </CardHeader>
                         <CardContent>
-                            <div className="text-2xl font-bold">64%</div>
-                            <p className="text-xs text-muted-foreground">Project completion rate</p>
+                            <div className="mt-3">
+                                <Slider
+                                    defaultValue={[64]}
+                                    max={100}
+                                    step={1}
+                                    className="w-full"
+                                    disabled
+                                />
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-2">64% Project completion rate</p>
                         </CardContent>
                     </Card>
                 </div>
@@ -117,19 +142,47 @@ export default function Dashboard({
                             <CardTitle>Revenue Overview</CardTitle>
                             <CardDescription>Monthly revenue growth for the last 6 months.</CardDescription>
                         </CardHeader>
-                        <CardContent className="pl-2">
-                            <div className="h-[300px]">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={revenueData || []}>
-                                        <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                                        <XAxis dataKey="month" />
-                                        <YAxis tickFormatter={(value) => `Rp ${value / 1000}k`} />
-                                        <Tooltip formatter={(value: any) => `Rp ${new Intl.NumberFormat('id-ID').format(value)}`} />
-                                        <Bar dataKey="total" fill="#4f46e5" radius={[4, 4, 0, 0]} />
-                                    </BarChart>
-                                </ResponsiveContainer>
-                            </div>
+                        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
+                            <ChartContainer config={chartConfig} className="aspect-auto h-[300px] w-full">
+                                <BarChart
+                                    accessibilityLayer
+                                    data={revenueData || []}
+                                    margin={{
+                                        top: 20,
+                                    }}
+                                >
+                                    <CartesianGrid vertical={false} />
+                                    <XAxis
+                                        dataKey="month"
+                                        tickLine={false}
+                                        tickMargin={10}
+                                        axisLine={false}
+                                        tickFormatter={(value) => value.slice(0, 3)}
+                                    />
+                                    <ChartTooltip
+                                        cursor={false}
+                                        content={<ChartTooltipContent hideLabel />}
+                                    />
+                                    <Bar dataKey="total" fill="var(--color-total)" radius={8}>
+                                        <LabelList
+                                            position="top"
+                                            offset={12}
+                                            className="fill-foreground"
+                                            fontSize={12}
+                                            formatter={(value: number) => `Rp ${value / 1000}k`}
+                                        />
+                                    </Bar>
+                                </BarChart>
+                            </ChartContainer>
                         </CardContent>
+                        <CardFooter className="flex-col items-start gap-2 text-sm border-t pt-4">
+                            <div className="flex gap-2 leading-none font-medium">
+                                Revenue trending up by 5.2% this month <TrendingUp className="h-4 w-4 text-green-500" />
+                            </div>
+                            <div className="leading-none text-muted-foreground">
+                                Menampilkan total pendapatan dalam 6 bulan terakhir.
+                            </div>
+                        </CardFooter>
                     </Card>
                     <Card className="col-span-3">
                         <CardHeader>
@@ -184,7 +237,7 @@ export default function Dashboard({
                                             paddingAngle={5}
                                             dataKey="count"
                                             nameKey="status"
-                                            // label={({ name, percent }: { name: string, percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                                            label={({ name, percent }: { name: string, percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}
                                         >
                                             {(projectsByStatus || []).map((entry: any, index: number) => (
                                                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

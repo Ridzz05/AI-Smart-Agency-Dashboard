@@ -25,14 +25,14 @@ import {
     SelectValue,
 } from "@/components/ui/select"
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-    SheetFooter,
-} from "@/components/ui/sheet"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -127,7 +127,7 @@ export default function Index({ transactions, customers, projects }: PageProps<{
                         <p className="text-muted-foreground">Monitor sales and handle invoices.</p>
                     </div>
                     
-                    <Sheet open={isOpen} onOpenChange={(open) => {
+                    <Dialog open={isOpen} onOpenChange={(open) => {
                         setIsOpen(open);
                         if (!open) {
                             setEditingTransaction(null);
@@ -135,19 +135,19 @@ export default function Index({ transactions, customers, projects }: PageProps<{
                             clearErrors();
                         }
                     }}>
-                        <SheetTrigger asChild>
+                        <DialogTrigger asChild>
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Add Transaction
                             </Button>
-                        </SheetTrigger>
-                        <SheetContent className="sm:max-w-[425px]">
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
                             <form onSubmit={onSubmit}>
-                                <SheetHeader>
-                                    <SheetTitle>{editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}</SheetTitle>
-                                    <SheetDescription>
+                                <DialogHeader>
+                                    <DialogTitle>{editingTransaction ? 'Edit Transaction' : 'Add New Transaction'}</DialogTitle>
+                                    <DialogDescription>
                                         Record a new payment or update existing transaction details.
-                                    </SheetDescription>
-                                </SheetHeader>
+                                    </DialogDescription>
+                                </DialogHeader>
                                 <div className="grid gap-4 py-4">
                                     <Field>
                                         <FieldLabel htmlFor="customer_id">Customer</FieldLabel>
@@ -233,14 +233,14 @@ export default function Index({ transactions, customers, projects }: PageProps<{
                                         {errors.attachment && <FieldDescription className="text-red-500">{errors.attachment}</FieldDescription>}
                                     </Field>
                                 </div>
-                                <SheetFooter>
+                                <DialogFooter className="mt-6">
                                     <Button type="submit" disabled={processing} className="w-full">
                                         {editingTransaction ? 'Update Transaction' : 'Save Transaction'}
                                     </Button>
-                                </SheetFooter>
+                                </DialogFooter>
                             </form>
-                        </SheetContent>
-                    </Sheet>
+                        </DialogContent>
+                    </Dialog>
                 </div>
 
                 <div className="rounded-md border bg-card text-card-foreground shadow-sm">

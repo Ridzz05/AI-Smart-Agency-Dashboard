@@ -14,14 +14,14 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Edit } from "lucide-react"
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-    SheetFooter,
-} from "@/components/ui/sheet"
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+    DialogFooter,
+} from "@/components/ui/dialog"
 import {
     AlertDialog,
     AlertDialogAction,
@@ -117,7 +117,7 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
                 <div className="flex items-center justify-between">
                     <h1 className="text-2xl font-bold tracking-tight">Customer Management</h1>
                     
-                    <Sheet open={isOpen} onOpenChange={(open) => {
+                    <Dialog open={isOpen} onOpenChange={(open) => {
                         setIsOpen(open);
                         if (!open) {
                             setEditingCustomer(null);
@@ -125,19 +125,19 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
                             clearErrors();
                         }
                     }}>
-                        <SheetTrigger asChild>
+                        <DialogTrigger asChild>
                             <Button>
                                 <Plus className="mr-2 h-4 w-4" /> Add Customer
                             </Button>
-                        </SheetTrigger>
-                        <SheetContent className="sm:max-w-[425px]">
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[500px]">
                             <form onSubmit={onSubmit}>
-                                <SheetHeader>
-                                    <SheetTitle>{editingCustomer ? 'Edit Customer' : 'Add New Customer'}</SheetTitle>
-                                    <SheetDescription>
+                                <DialogHeader>
+                                    <DialogTitle>{editingCustomer ? 'Edit Customer' : 'Add New Customer'}</DialogTitle>
+                                    <DialogDescription>
                                         Fill in the details below to {editingCustomer ? 'update the' : 'create a new'} customer.
-                                    </SheetDescription>
-                                </SheetHeader>
+                                    </DialogDescription>
+                                </DialogHeader>
                                 <div className="grid gap-4 py-4">
                                     <Field>
                                         <FieldLabel htmlFor="name">Full Name</FieldLabel>
@@ -198,14 +198,14 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
                                         {errors.status && <FieldDescription className="text-red-500">{errors.status}</FieldDescription>}
                                     </Field>
                                 </div>
-                                <SheetFooter>
+                                <DialogFooter className="mt-6">
                                     <Button type="submit" disabled={processing} className="w-full">
                                         {editingCustomer ? 'Update Customer' : 'Save Customer'}
                                     </Button>
-                                </SheetFooter>
+                                </DialogFooter>
                             </form>
-                        </SheetContent>
-                    </Sheet>
+                        </DialogContent>
+                    </Dialog>
                 </div>
 
                 <div className="rounded-md border bg-card text-card-foreground shadow-sm">

@@ -20,21 +20,28 @@ class DashboardController extends Controller
             ->groupBy('status')
             ->get();
 
-        // Revenue for the last 6 months - formatted in PHP for database compatibility
-        $revenueData = Transaction::where('status', 'Paid')
+        // Generate last 6 months with 0 defaults
+        $months = collect();
+        for ($i = 5; $i >= 0; $i--) {
+            $months->put(now()->subMonths($i)->format('M'), 0);
+        }
+
+        $revenueDataRaw = Transaction::where('status', 'Paid')
             ->where('created_at', '>=', now()->subMonths(6))
-            ->orderBy('created_at')
             ->get()
             ->groupBy(function($item) {
                 return $item->created_at->format('M');
             })
-            ->map(function($group, $month) {
-                return [
-                    'month' => $month,
-                    'total' => (float)$group->sum('amount')
-                ];
-            })
-            ->values();
+            ->map(function($group) {
+                return (float)$group->sum('amount');
+            });
+
+        $revenueData = $months->map(function($value, $month) use ($revenueDataRaw) {
+            return [
+                'month' => $month,
+                'total' => $revenueDataRaw->get($month, 0)
+            ];
+        })->values();
 
         // Recent Activities (Combined)
         $recentCustomers = Customer::latest()->take(2)->get()->map(function($item) {

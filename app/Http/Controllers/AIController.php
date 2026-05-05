@@ -56,7 +56,7 @@ class AIController extends Controller
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
             ])->post('https://openrouter.ai/api/v1/chat/completions', [
-                'model' => 'baidu/qianfan-ocr-fast:free',
+                'model' => 'poolside/laguna-xs.2:free',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -67,6 +67,8 @@ class AIController extends Controller
                         'content' => $request->message
                     ]
                 ],
+                'max_tokens' => 10000,
+                'temperature' => 0.7,
             ]);
 
             if ($response->successful()) {
@@ -139,6 +141,7 @@ class AIController extends Controller
         3. GENERAL KNOWLEDGE: You can answer general business questions but relate them to this CRM.
         4. DATA LIMITS: If the user asks for specific data NOT listed in your context (like a specific transaction from 2 years ago), politely tell them to check the 'Transactions' or 'Projects' module for more details.
         5. FORMAT: Use bullet points for lists and keep paragraphs short.
+        6. LANGUAGE: Always respond using Indonesian language (Bahasa Indonesia) ONLY.
 
         You are now ready to assist the Administrator.";
     }
