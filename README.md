@@ -2,7 +2,7 @@
 
 AdminCRM-Kita adalah sistem manajemen hubungan pelanggan (CRM) dan pengelolaan bisnis modern yang dirancang khusus untuk agensi dan penyedia jasa. Dibangun dengan teknologi mutakhir untuk memberikan pengalaman pengguna yang cepat, responsif, dan elegan.
 
-![Dashboard Preview](https://via.placeholder.com/1200x600.png?text=AdminCRM-Kita+Dashboard+Preview)
+![Dashboard Preview](./public/preview.png)
 
 ## ✨ Fitur Utama
 
