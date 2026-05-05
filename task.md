@@ -1,0 +1,21 @@
+# Task List - AdminCRM-Kita
+
+- [ ] **Tahap 1: Backend Foundation**
+    - [ ] Buat Migration & Model `Customer`
+    - [ ] Buat Migration & Model `Project`
+    - [ ] Buat Migration & Model `Transaction`
+    - [ ] Setup relasi antar Model
+- [ ] **Tahap 2: Routing & Controllers**
+    - [ ] Buat `CustomerController`
+    - [ ] Buat `ProjectController`
+    - [ ] Buat `TransactionController`
+    - [ ] Daftarkan rute di `web.php`
+- [ ] **Tahap 3: Frontend UI (Customers)**
+    - [ ] Implementasi `DataTable` untuk Customers
+    - [ ] Form Tambah/Edit Customer
+- [ ] **Tahap 4: Frontend UI (Projects & Transactions)**
+    - [ ] Halaman Projects (dengan Progress Bar)
+    - [ ] Halaman Transactions (dengan Upload Attachment)
+- [ ] **Tahap 5: Dashboard & Analytics**
+    - [ ] Integrasi `Recharts`
+    - [ ] Ringkasan Metrik (Omzet, Deadline)
