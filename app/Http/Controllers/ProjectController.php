@@ -9,11 +9,24 @@ use Inertia\Inertia;
 
 class ProjectController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        
+        $projects = Project::with('customer')
+            ->when($search, function($query, $search) {
+                $query->where('name', 'like', "%{$search}%")
+                    ->orWhereHas('customer', function($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            })
+            ->latest()
+            ->get();
+
         return Inertia::render('projects/index', [
-            'projects' => Project::with('customer')->latest()->get(),
+            'projects' => $projects,
             'customers' => Customer::select('id', 'name')->get(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

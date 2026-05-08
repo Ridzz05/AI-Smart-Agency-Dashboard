@@ -10,12 +10,26 @@ use Inertia\Inertia;
 
 class TransactionController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        
+        $transactions = Transaction::with(['customer', 'project'])
+            ->when($search, function($query, $search) {
+                $query->whereHas('customer', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhereHas('project', function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%");
+                })->orWhere('amount', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->get();
+
         return Inertia::render('transactions/index', [
-            'transactions' => Transaction::with(['customer', 'project'])->latest()->get(),
+            'transactions' => $transactions,
             'customers' => Customer::select('id', 'name')->get(),
             'projects' => Project::select('id', 'name')->get(),
+            'filters' => $request->only(['search']),
         ]);
     }
 

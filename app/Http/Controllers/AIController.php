@@ -25,6 +25,52 @@ class AIController extends Controller
         ]);
     }
 
+    public function getInsight()
+    {
+        $apiKey = config('services.openrouter.key');
+        
+        if (!$apiKey) {
+            return response()->json(['insight' => 'API Key belum dikonfigurasi.']);
+        }
+
+        $context = $this->getSystemContext();
+        
+        try {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $apiKey,
+                'Content-Type' => 'application/json',
+                'HTTP-Referer' => config('app.url'),
+                'X-Title' => config('app.name'),
+            ])->post('https://openrouter.ai/api/v1/chat/completions', [
+                'model' => 'google/gemini-2.0-flash-lite-001:free',
+                'messages' => [
+                    [
+                        'role' => 'system',
+                        'content' => $context . "\n\nCOMMAND: Berikan 1 ringkasan singkat (maksimal 3 kalimat) tentang kondisi bisnis saat ini dan 1 saran strategis. Gunakan bahasa yang santai tapi profesional. Panggil user dengan 'Boss' atau 'Tim'. Wajib Bahasa Indonesia."
+                    ],
+                    [
+                        'role' => 'user',
+                        'content' => "Berikan insight dashboard hari ini."
+                    ]
+                ],
+                'max_tokens' => 200,
+                'temperature' => 0.7,
+            ]);
+
+            if ($response->successful()) {
+                $data = $response->json();
+                return response()->json([
+                    'insight' => $data['choices'][0]['message']['content']
+                ]);
+            }
+
+            return response()->json(['insight' => 'Gagal mengambil insight saat ini.']);
+
+        } catch (\Exception $e) {
+            return response()->json(['insight' => 'Error: ' . $e->getMessage()]);
+        }
+    }
+
     public function chat(Request $request)
     {
         $request->validate([
@@ -56,7 +102,7 @@ class AIController extends Controller
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
             ])->post('https://openrouter.ai/api/v1/chat/completions', [
-                'model' => 'poolside/laguna-xs.2:free',
+                'model' => 'google/gemini-2.0-flash-lite-001:free',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -67,7 +113,7 @@ class AIController extends Controller
                         'content' => $request->message
                     ]
                 ],
-                'max_tokens' => 10000,
+                'max_tokens' => 2048,
                 'temperature' => 0.7,
             ]);
 

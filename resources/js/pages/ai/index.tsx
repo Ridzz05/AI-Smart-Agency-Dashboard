@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bot, Send, User, Loader2 } from "lucide-react"
+import { Robot, PaperPlaneTilt, User, CircleNotch } from "@phosphor-icons/react"
 import axios from "axios"
 import ReactMarkdown from "react-markdown"
 
@@ -62,7 +62,7 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                 <div className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
                     <div className="flex items-center gap-3">
                         <div className="bg-primary/10 p-2 rounded-xl">
-                            <Bot className="h-6 w-6 text-primary" />
+                            <Robot weight="light" className="h-6 w-6 text-primary" />
                         </div>
                         <div>
                             <h1 className="text-lg font-bold leading-none">KitaAI Assistant</h1>
@@ -85,20 +85,20 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                                         <Avatar className={`h-9 w-9 border-2 ${msg.role === 'assistant' ? 'border-primary/20' : 'border-secondary/20'}`}>
                                             {msg.role === 'assistant' ? (
                                                 <AvatarFallback className="bg-primary text-primary-foreground">
-                                                    <Bot className="h-5 w-5" />
+                                                    <Robot weight="bold" className="h-5 w-5" />
                                                 </AvatarFallback>
                                             ) : (
                                                 <AvatarFallback className="bg-secondary text-secondary-foreground">
-                                                    <User className="h-5 w-5" />
+                                                    <User weight="bold" className="h-5 w-5" />
                                                 </AvatarFallback>
                                             )}
                                         </Avatar>
                                         <div className={`relative rounded-2xl px-5 py-3.5 text-sm shadow-sm leading-relaxed ${
                                             msg.role === 'user' 
-                                            ? 'bg-primary text-primary-foreground rounded-tr-none' 
+                                            ? 'bg-primary text-black font-medium rounded-tr-none' 
                                             : 'bg-muted/50 border rounded-tl-none'
                                         }`}>
-                                            <div className={`prose prose-sm max-w-none ${msg.role === 'user' ? 'prose-invert' : 'dark:prose-invert'}`}>
+                                            <div className={`prose prose-sm max-w-none ${msg.role === 'user' ? '' : 'dark:prose-invert'}`}>
                                                 <ReactMarkdown>{msg.content}</ReactMarkdown>
                                             </div>
                                         </div>
@@ -110,7 +110,7 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                                     <div className="flex gap-4">
                                         <Avatar className="h-9 w-9 border-2 border-primary/20 animate-pulse">
                                             <AvatarFallback className="bg-primary text-primary-foreground">
-                                                <Bot className="h-5 w-5" />
+                                                <Robot weight="bold" className="h-5 w-5" />
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="bg-muted/50 border rounded-2xl rounded-tl-none px-5 py-3.5 shadow-sm flex items-center gap-3">
@@ -146,7 +146,7 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                                     disabled={isLoading || !input.trim()} 
                                     className="h-10 w-10 rounded-xl transition-all active:scale-95"
                                 >
-                                    {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                                    {isLoading ? <CircleNotch weight="bold" className="h-4 w-4 animate-spin" /> : <PaperPlaneTilt weight="bold" className="h-4 w-4" />}
                                 </Button>
                             </div>
                         </form>

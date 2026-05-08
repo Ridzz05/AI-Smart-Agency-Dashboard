@@ -10,10 +10,21 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Slider } from "@/components/ui/slider";
-import { Users, Briefcase, DollarSign, TrendingUp, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { 
+    Users, 
+    Briefcase, 
+    CurrencyDollar, 
+    TrendUp, 
+    Plus, 
+    Sparkle, 
+    ArrowUpRight, 
+    Clock 
+} from "@phosphor-icons/react";
 import {
-    BarChart,
-    Bar,
+    AreaChart,
+    Area,
     XAxis,
     YAxis,
     CartesianGrid,
@@ -22,7 +33,6 @@ import {
     PieChart,
     Pie,
     Cell,
-    LabelList,
 } from "recharts";
 import {
     ChartContainer,
@@ -30,8 +40,10 @@ import {
     ChartTooltipContent,
     type ChartConfig,
 } from "@/components/ui/chart";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+const COLORS = ["#fbbf24", "#d97706", "#f59e0b", "#451a03"];
 
 export default function Dashboard({
     stats,
@@ -39,10 +51,22 @@ export default function Dashboard({
     revenueData,
     activities,
 }: any) {
+    const [aiInsight, setAiInsight] = useState<string | null>(null);
+    const [isLoadingInsight, setIsLoadingInsight] = useState(true);
+
+    useEffect(() => {
+        axios.get(route('ai.insight'))
+            .then(res => {
+                setAiInsight(res.data.insight);
+            })
+            .catch(err => console.error(err))
+            .finally(() => setIsLoadingInsight(false));
+    }, []);
+
     const chartConfig = {
         total: {
             label: "Revenue",
-            color: "#4f46e5",
+            color: "hsl(var(--primary))",
         },
     } satisfies ChartConfig
 
@@ -50,206 +74,246 @@ export default function Dashboard({
         <AuthenticatedLayout header="Dashboard">
             <Head title="Dashboard" />
 
-            <div className="flex flex-col gap-6 p-6 pt-6">
+            <div className="flex flex-col gap-8 p-4 md:p-8 pt-6">
                 {/* Greeting Hero Widget */}
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 p-8 text-white shadow-2xl border border-white/5">
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                        <div>
-                            <h2 className="text-3xl font-bold tracking-tight">Welcome Gess! 👋</h2>
-                            <p className="mt-2 text-slate-300 max-w-xl">
-                                Hari ini sistem memiliki <span className="font-semibold text-indigo-400">{stats?.totalProjects || 0} proyek</span> aktif. 
-                                Tetap semangat untuk <span className="font-semibold text-indigo-400">Ki, Jo, dan Nath</span> dalam mengelola agensi!
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-8 text-black shadow-2xl border border-amber-300/20">
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
+                        <div className="max-w-2xl">
+                            <div className="flex items-center gap-2 mb-4">
+                                <Badge className="bg-black/10 hover:bg-black/20 text-black border-none backdrop-blur-md px-3 py-1 text-xs font-bold uppercase tracking-wider">
+                                    Admin Intelligence Activated
+                                </Badge>
+                            </div>
+                            <h2 className="text-4xl font-extrabold tracking-tight sm:text-5xl mb-4">
+                                Welcome Back, Gess! 👋
+                            </h2>
+                            <p className="text-lg text-amber-950 leading-relaxed opacity-80">
+                                Performa agensi Anda naik <span className="font-bold">12%</span> minggu ini. 
+                                Ada <span className="font-bold">{stats?.totalProjects || 0} proyek</span> yang membutuhkan perhatian Anda.
                             </p>
-                            <div className="mt-6 flex flex-wrap gap-3">
-                                <Link href={route('projects.index')} className="inline-flex items-center justify-center rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium transition-all hover:bg-indigo-500 shadow-lg shadow-indigo-500/20">
-                                    <Plus className="mr-2 h-4 w-4" /> Proyek Baru
+                            <div className="mt-8 flex flex-wrap gap-4">
+                                <Link href={route('projects.index')} className="group inline-flex items-center justify-center rounded-xl bg-black px-6 py-3 text-sm font-bold text-amber-400 transition-all hover:bg-slate-900 shadow-xl shadow-black/20 active:scale-95">
+                                    <Plus weight="bold" className="mr-2 h-5 w-5 transition-transform group-hover:rotate-90" /> Proyek Baru
                                 </Link>
-                                <Link href={route('transactions.index')} className="inline-flex items-center justify-center rounded-lg bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-md border border-white/10 transition-colors hover:bg-white/20">
-                                    <DollarSign className="mr-2 h-4 w-4" /> Catat Transaksi
+                                <Link href={route('transactions.index')} className="inline-flex items-center justify-center rounded-xl bg-black/5 px-6 py-3 text-sm font-bold text-black backdrop-blur-md border border-black/10 transition-all hover:bg-black/10 active:scale-95">
+                                    <CurrencyDollar weight="bold" className="mr-2 h-5 w-5" /> Catat Transaksi
                                 </Link>
                             </div>
                         </div>
-                        <div className="hidden lg:block">
-                            <div className="flex -space-x-4">
-                                {['Ki', 'Jo', 'Na'].map((name) => (
-                                    <div key={name} className="h-16 w-16 rounded-full border-4 border-slate-800 bg-slate-900 flex items-center justify-center text-indigo-400 font-bold text-xl shadow-2xl">
+                        <div className="hidden lg:flex flex-col items-center gap-4">
+                            <div className="flex -space-x-6">
+                                {['Ki', 'Jo', 'Na'].map((name, i) => (
+                                    <div key={name} 
+                                         className={`h-20 w-20 rounded-full border-4 border-background flex items-center justify-center text-black font-black text-2xl shadow-2xl transform hover:-translate-y-2 transition-transform cursor-pointer
+                                         ${i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-amber-500' : 'bg-amber-300'}`}>
                                         {name}
                                     </div>
                                 ))}
                             </div>
-                            <p className="mt-3 text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest">Core Team Active</p>
+                            <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/30 backdrop-blur-lg border border-white/10">
+                                <div className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                                <span className="text-[10px] text-white/80 font-bold uppercase tracking-[0.2em]">Core Team Online</span>
+                            </div>
                         </div>
                     </div>
                     {/* Decorative elements */}
-                    <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
-                    <div className="absolute -bottom-10 left-20 h-32 w-32 rounded-full bg-indigo-400/20 blur-2xl"></div>
+                    <div className="absolute -right-20 -bottom-20 h-80 w-80 rounded-full bg-amber-400/20 blur-3xl opacity-30"></div>
+                    <div className="absolute top-0 left-1/2 -translate-x-1/2 h-40 w-full bg-gradient-to-b from-white/5 to-transparent"></div>
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
-                            <Users className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats?.totalCustomers || 0}</div>
-                            <p className="text-xs text-muted-foreground">Registered leads & clients</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Active Projects</CardTitle>
-                            <Briefcase className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">{stats?.totalProjects || 0}</div>
-                            <p className="text-xs text-muted-foreground">Across all stages</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-                            <DollarSign className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-2xl font-bold">Rp {new Intl.NumberFormat('id-ID').format(stats?.totalRevenue || 0)}</div>
-                            <p className="text-xs text-muted-foreground">From paid transactions</p>
-                        </CardContent>
-                    </Card>
-                    <Card>
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">Avg. Progress</CardTitle>
-                            <TrendingUp className="h-4 w-4 text-muted-foreground" />
-                        </CardHeader>
-                        <CardContent>
-                            <div className="mt-3">
-                                <Slider
-                                    defaultValue={[64]}
-                                    max={100}
-                                    step={1}
-                                    className="w-full"
-                                    disabled
-                                />
+                {/* AI Insight Widget */}
+                <Card className="border-none shadow-xl bg-gradient-to-r from-amber-50 to-amber-100/30 dark:from-zinc-900/50 dark:to-zinc-900/20 overflow-hidden relative border-l-4 border-l-amber-400">
+                    <div className="absolute top-0 right-0 p-4 opacity-10">
+                        <Sparkle weight="light" className="h-24 w-24 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <CardHeader className="flex flex-row items-center gap-3 pb-2 relative z-10">
+                        <div className="h-10 w-10 rounded-xl bg-amber-400 flex items-center justify-center text-black shadow-lg shadow-amber-400/30">
+                            <Sparkle weight="bold" className="h-5 w-5" />
+                        </div>
+                        <div>
+                            <CardTitle className="text-lg">AI Smart Insights</CardTitle>
+                            <CardDescription>Generated by KitaAI Senior Analyst</CardDescription>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="relative z-10">
+                        {isLoadingInsight ? (
+                            <div className="flex flex-col gap-2">
+                                <div className="h-4 w-3/4 bg-slate-200 dark:bg-slate-800 animate-pulse rounded" />
+                                <div className="h-4 w-1/2 bg-slate-200 dark:bg-slate-800 animate-pulse rounded" />
                             </div>
-                            <p className="text-xs text-muted-foreground mt-2">64% Project completion rate</p>
-                        </CardContent>
-                    </Card>
+                        ) : (
+                            <p className="text-slate-700 dark:text-slate-300 italic leading-relaxed text-lg">
+                                "{aiInsight}"
+                            </p>
+                        )}
+                    </CardContent>
+                </Card>
+
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+                    {[
+                        { title: "Total Customers", value: stats?.totalCustomers, icon: Users, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Leads & Active Clients" },
+                        { title: "Active Projects", value: stats?.totalProjects, icon: Briefcase, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Running right now" },
+                        { title: "Total Revenue", value: `Rp ${new Intl.NumberFormat('id-ID').format(stats?.totalRevenue || 0)}`, icon: CurrencyDollar, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Verified payments" },
+                        { title: "Engagement Rate", value: "84%", icon: TrendUp, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Up 12% from last month" }
+                    ].map((item, i) => (
+                        <Card key={i} className="group hover:shadow-2xl transition-all duration-300 border-none bg-card shadow-lg">
+                            <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                                <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{item.title}</CardTitle>
+                                <div className={`p-2 rounded-xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform`}>
+                                    <item.icon weight="light" className="h-5 w-5" />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-black tracking-tight mb-1">{item.value || 0}</div>
+                                <p className="text-xs text-muted-foreground font-medium flex items-center gap-1">
+                                    <ArrowUpRight weight="bold" className="h-3 w-3 text-emerald-500" /> {item.desc}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    ))}
                 </div>
 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                    <Card className="col-span-4">
-                        <CardHeader>
-                            <CardTitle>Revenue Overview</CardTitle>
-                            <CardDescription>Monthly revenue growth for the last 6 months.</CardDescription>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
+                    <Card className="lg:col-span-4 border-none shadow-xl overflow-hidden">
+                        <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-6">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <CardTitle className="text-xl font-bold">Revenue Analytics</CardTitle>
+                                    <CardDescription>Performance trends over the last 6 months</CardDescription>
+                                </div>
+                                <Badge variant="outline" className="font-bold border-amber-200 text-amber-600 bg-amber-50 dark:bg-amber-950 dark:text-amber-300">
+                                    IDR Currency
+                                </Badge>
+                            </div>
                         </CardHeader>
-                        <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-                            <ChartContainer config={chartConfig} className="aspect-auto h-[300px] w-full">
-                                <BarChart
-                                    accessibilityLayer
-                                    data={revenueData || []}
-                                    margin={{
-                                        top: 20,
-                                    }}
-                                >
-                                    <CartesianGrid vertical={false} />
-                                    <XAxis
-                                        dataKey="month"
-                                        tickLine={false}
-                                        tickMargin={10}
-                                        axisLine={false}
-                                        tickFormatter={(value) => value.slice(0, 3)}
-                                    />
-                                    <ChartTooltip
-                                        cursor={false}
-                                        content={<ChartTooltipContent hideLabel />}
-                                    />
-                                    <Bar dataKey="total" fill="var(--color-total)" radius={8}>
-                                        <LabelList
-                                            position="top"
-                                            offset={12}
-                                            className="fill-foreground"
-                                            fontSize={12}
-                                            formatter={(value: number) => `Rp ${value / 1000}k`}
+                        <CardContent className="pt-8">
+                            <ChartContainer config={chartConfig} className="aspect-auto h-[350px] w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={revenueData || []} margin={{ left: 12, right: 12, top: 12 }}>
+                                        <defs>
+                                            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="var(--color-total)" stopOpacity={0.3}/>
+                                                <stop offset="95%" stopColor="var(--color-total)" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid vertical={false} strokeDasharray="3 3" opacity={0.1} />
+                                        <XAxis
+                                            dataKey="month"
+                                            tickLine={false}
+                                            tickMargin={10}
+                                            axisLine={false}
+                                            tick={{ fontSize: 12, fontWeight: 600 }}
                                         />
-                                    </Bar>
-                                </BarChart>
+                                        <YAxis 
+                                            tickLine={false} 
+                                            axisLine={false} 
+                                            tickFormatter={(value) => `${value / 1000000}M`}
+                                            tick={{ fontSize: 12 }}
+                                        />
+                                        <ChartTooltip
+                                            content={<ChartTooltipContent />}
+                                        />
+                                        <Area 
+                                            type="monotone" 
+                                            dataKey="total" 
+                                            stroke="var(--color-total)" 
+                                            strokeWidth={4}
+                                            fillOpacity={1} 
+                                            fill="url(#colorTotal)" 
+                                        />
+                                    </AreaChart>
+                                </ResponsiveContainer>
                             </ChartContainer>
                         </CardContent>
-                        <CardFooter className="flex-col items-start gap-2 text-sm border-t pt-4">
-                            <div className="flex gap-2 leading-none font-medium">
-                                Revenue trending up by 5.2% this month <TrendingUp className="h-4 w-4 text-green-500" />
-                            </div>
-                            <div className="leading-none text-muted-foreground">
-                                Menampilkan total pendapatan dalam 6 bulan terakhir.
-                            </div>
-                        </CardFooter>
                     </Card>
-                    <Card className="col-span-3">
-                        <CardHeader>
-                            <CardTitle>Recent Activity</CardTitle>
-                            <CardDescription>Latest actions in the CRM.</CardDescription>
+
+                    <Card className="lg:col-span-3 border-none shadow-xl">
+                        <CardHeader className="border-b pb-6">
+                            <CardTitle className="text-xl font-bold">Recent Pulse</CardTitle>
+                            <CardDescription>Live updates from your team and clients</CardDescription>
                         </CardHeader>
-                        <CardContent>
-                            <div className="space-y-8">
+                        <CardContent className="pt-6">
+                            <div className="space-y-6">
                                 {activities && activities.length > 0 ? (
                                     activities.map((activity: any, i: number) => (
-                                        <div key={i} className="flex items-center">
-                                            <div className={`flex h-9 w-9 items-center justify-center rounded-full border shadow-sm ${
-                                                activity.type === 'customer' ? 'bg-blue-100 text-blue-600' :
-                                                activity.type === 'project' ? 'bg-green-100 text-green-600' :
-                                                'bg-amber-100 text-amber-600'
+                                        <div key={i} className="group flex items-start gap-4 p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                            <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border-2 shadow-sm transition-transform group-hover:scale-110 ${
+                                                activity.type === 'customer' ? 'bg-amber-50 border-amber-100 text-amber-600' :
+                                                activity.type === 'project' ? 'bg-amber-50 border-amber-100 text-amber-600' :
+                                                'bg-amber-50 border-amber-100 text-amber-600'
                                             }`}>
-                                                {activity.type === 'customer' ? <Users className="h-4 w-4" /> :
-                                                 activity.type === 'project' ? <Briefcase className="h-4 w-4" /> :
-                                                 <DollarSign className="h-4 w-4" />}
+                                                {activity.type === 'customer' ? <Users weight="light" className="h-5 w-5" /> :
+                                                 activity.type === 'project' ? <Briefcase weight="light" className="h-5 w-5" /> :
+                                                 <CurrencyDollar weight="light" className="h-5 w-5" />}
                                             </div>
-                                            <div className="ml-4 space-y-1">
-                                                <p className="text-sm font-medium leading-none">{activity.title}</p>
-                                                <p className="text-sm text-muted-foreground">{activity.description}</p>
+                                            <div className="flex flex-col gap-0.5">
+                                                <p className="text-sm font-bold leading-tight">{activity.title}</p>
+                                                <p className="text-sm text-muted-foreground font-medium">{activity.description}</p>
+                                                <p className="flex items-center gap-1.5 text-[10px] font-bold text-muted-foreground/60 uppercase mt-1">
+                                                    <Clock className="h-3 w-3" /> {activity.time}
+                                                </p>
                                             </div>
-                                            <div className="ml-auto font-medium text-xs text-muted-foreground">{activity.time}</div>
                                         </div>
                                     ))
                                 ) : (
-                                    <p className="text-sm text-muted-foreground text-center py-4">Belum ada aktivitas terbaru.</p>
+                                    <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
+                                        <div className="h-12 w-12 rounded-full bg-slate-100 mb-4 flex items-center justify-center">
+                                            <Clock className="h-6 w-6" />
+                                        </div>
+                                        <p className="text-sm font-bold">No active pulses recorded.</p>
+                                    </div>
                                 )}
                             </div>
                         </CardContent>
+                        <CardFooter className="pt-4">
+                            <Button variant="outline" className="w-full font-bold text-xs uppercase tracking-widest rounded-xl py-6">
+                                View System Logs
+                            </Button>
+                        </CardFooter>
                     </Card>
                 </div>
                 
-                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                    <Card className="col-span-7">
-                        <CardHeader>
-                            <CardTitle>Project Status Distribution</CardTitle>
-                            <CardDescription>Visual breakdown of projects across different stages.</CardDescription>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="h-[300px] w-full">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                        <Pie
-                                            data={projectsByStatus || []}
-                                            cx="50%"
-                                            cy="50%"
-                                            innerRadius={60}
-                                            outerRadius={100}
-                                            paddingAngle={5}
-                                            dataKey="count"
-                                            nameKey="status"
-                                            label={({ name, percent }: { name: string, percent: number }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                                        >
-                                            {(projectsByStatus || []).map((entry: any, index: number) => (
-                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                                            ))}
-                                        </Pie>
-                                        <Tooltip />
-                                    </PieChart>
-                                </ResponsiveContainer>
-                            </div>
-                        </CardContent>
-                    </Card>
-                </div>
+                <Card className="border-none shadow-xl overflow-hidden">
+                    <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b">
+                        <CardTitle className="text-xl font-bold">Project Allocation</CardTitle>
+                        <CardDescription>How your team's energy is distributed</CardDescription>
+                    </CardHeader>
+                    <CardContent className="pt-8">
+                        <div className="h-[400px] w-full">
+                            <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                    <Pie
+                                        data={projectsByStatus || []}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={80}
+                                        outerRadius={140}
+                                        paddingAngle={10}
+                                        dataKey="count"
+                                        nameKey="status"
+                                        stroke="none"
+                                    >
+                                        {(projectsByStatus || []).map((entry: any, index: number) => (
+                                            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip 
+                                        contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                                    />
+                                </PieChart>
+                            </ResponsiveContainer>
+                        </div>
+                        <div className="flex flex-wrap justify-center gap-6 mt-4 pb-4">
+                            {(projectsByStatus || []).map((entry: any, index: number) => (
+                                <div key={index} className="flex items-center gap-2">
+                                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                                    <span className="text-sm font-bold">{entry.status}</span>
+                                    <span className="text-sm text-muted-foreground">({entry.count})</span>
+                                </div>
+                            ))}
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
         </AuthenticatedLayout>
     );

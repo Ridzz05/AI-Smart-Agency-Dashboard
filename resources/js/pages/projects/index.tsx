@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { Head, useForm } from '@inertiajs/react';
+import { Head, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import {
     Table,
@@ -12,7 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { Plus, Trash2, Edit } from "lucide-react"
+import { Plus, Trash2, Edit, Search } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 import { Slider } from "@/components/ui/slider"
 import {
@@ -49,7 +49,7 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { format } from "date-fns"
 import { Calendar as CalendarIcon, ChevronDown } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
@@ -74,7 +74,12 @@ interface Project {
     }
 }
 
-export default function Index({ projects, customers }: PageProps<{ projects: Project[], customers: {id: number, name: string}[] }>) {
+export default function Index({ projects, customers, filters }: PageProps<{ 
+    projects: Project[], 
+    customers: {id: number, name: string}[],
+    filters: { search?: string }
+}>) {
+    const [search, setSearch] = useState(filters.search || '');
     const [isOpen, setIsOpen] = useState(false);
     const [editingProject, setEditingProject] = useState<Project | null>(null);
 
@@ -86,6 +91,19 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
         deadline: '',
         progress: 0,
     });
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== (filters.search || '')) {
+                router.get(route('projects.index'), { search }, {
+                    preserveState: true,
+                    replace: true
+                });
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -130,26 +148,38 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
         >
             <Head title="Projects" />
 
-            <div className="flex flex-col gap-4 p-4 pt-0">
-                <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-6 p-4 md:p-6 pt-0">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
                         <h1 className="text-2xl font-bold tracking-tight">Projects</h1>
-                        <p className="text-muted-foreground">Manage your active projects and track progress.</p>
+                        <p className="text-sm text-muted-foreground">Manage your active projects and track progress.</p>
                     </div>
-                    
-                    <Dialog open={isOpen} onOpenChange={(open) => {
-                        setIsOpen(open);
-                        if (!open) {
-                            setEditingProject(null);
-                            reset();
-                            clearErrors();
-                        }
-                    }}>
+
+                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                        <div className="relative w-full sm:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                                placeholder="Search projects..." 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+                        
+                        <Dialog open={isOpen} onOpenChange={(open) => {
+                            setIsOpen(open);
+                            if (!open) {
+                                setEditingProject(null);
+                                reset();
+                                clearErrors();
+                            }
+                        }}>
                         <DialogTrigger asChild>
-                            <Button>
+                            <Button className="w-full sm:w-auto">
                                 <Plus className="mr-2 h-4 w-4" /> Add Project
                             </Button>
                         </DialogTrigger>
+                        {/* ... DialogContent remains the same ... */}
                         <DialogContent className="sm:max-w-[500px]">
                             <form onSubmit={onSubmit}>
                                 <DialogHeader>
@@ -268,8 +298,78 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
                         </DialogContent>
                     </Dialog>
                 </div>
+            </div>
 
-                <div className="rounded-md border bg-card text-card-foreground shadow-sm">
+                {/* Mobile View: Cards */}
+                <div className="grid gap-4 md:hidden">
+                    {projects.length === 0 ? (
+                        <div className="p-8 text-center border rounded-lg bg-card text-muted-foreground">
+                            No projects found.
+                        </div>
+                    ) : (
+                        projects.map((project) => (
+                            <div key={project.id} className="p-4 border rounded-lg bg-card shadow-sm space-y-4">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-bold text-lg">{project.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{project.customer?.name || 'No Customer'}</p>
+                                    </div>
+                                    <Badge variant={
+                                        project.status === 'Completed' ? 'default' :
+                                        project.status === 'In Progress' ? 'secondary' : 'outline'
+                                    }>
+                                        {project.status}
+                                    </Badge>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                    <div className="flex justify-between text-xs font-medium">
+                                        <span>Progress</span>
+                                        <span>{project.progress}%</span>
+                                    </div>
+                                    <Progress value={project.progress} className="h-2" />
+                                </div>
+
+                                <div className="flex justify-between items-center pt-2">
+                                    <div className="text-xs text-muted-foreground">
+                                        <p>Deadline</p>
+                                        <p className="font-medium text-foreground">{project.deadline || '-'}</p>
+                                    </div>
+                                    <div className="flex gap-2">
+                                        <Button variant="outline" size="sm" onClick={() => onEdit(project)}>
+                                            <Edit className="h-4 w-4 mr-2" /> Edit
+                                        </Button>
+                                        
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent className="w-[90vw] max-w-md rounded-lg">
+                                                <AlertDialogHeader>
+                                                    <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                    <AlertDialogDescription>
+                                                        Delete <strong>{project.name}</strong>?
+                                                    </AlertDialogDescription>
+                                                </AlertDialogHeader>
+                                                <AlertDialogFooter>
+                                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                    <AlertDialogAction onClick={() => onDelete(project.id)} className="bg-red-500">
+                                                        Delete
+                                                    </AlertDialogAction>
+                                                </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden md:block rounded-md border bg-card text-card-foreground shadow-sm overflow-hidden">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -282,71 +382,56 @@ export default function Index({ projects, customers }: PageProps<{ projects: Pro
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {projects.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="h-24 text-center">
-                                        No projects found.
+                            {projects.map((project) => (
+                                <TableRow key={project.id}>
+                                    <TableCell className="font-medium">{project.name}</TableCell>
+                                    <TableCell>{project.customer?.name || '-'}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={
+                                            project.status === 'Completed' ? 'default' :
+                                            project.status === 'In Progress' ? 'secondary' : 'outline'
+                                        }>
+                                            {project.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="w-[150px]">
+                                        <div className="flex flex-col gap-1">
+                                            <span className="text-xs text-muted-foreground">{project.progress}%</span>
+                                            <Progress value={project.progress} className="h-1.5" />
+                                        </div>
+                                    </TableCell>
+                                    <TableCell>{project.deadline || '-'}</TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="icon" onClick={() => onEdit(project)}>
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                            
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            This will delete the project <strong>{project.name}</strong>.
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => onDelete(project.id)} className="bg-red-500">
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
-                            ) : (
-                                projects.map((project) => (
-                                    <TableRow key={project.id}>
-                                        <TableCell className="font-medium">{project.name}</TableCell>
-                                        <TableCell>{project.customer?.name || '-'}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={
-                                                project.status === 'Completed' ? 'default' :
-                                                project.status === 'In Progress' ? 'secondary' : 'outline'
-                                            }>
-                                                {project.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="w-[150px]">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="text-xs text-muted-foreground">{project.progress}%</span>
-                                                <Progress value={project.progress} className="h-1.5" />
-                                            </div>
-                                        </TableCell>
-                                        <TableCell>{project.deadline || '-'}</TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon"
-                                                    onClick={() => onEdit(project)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                This will delete the project <strong>{project.name}</strong>.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction 
-                                                                onClick={() => onDelete(project.id)}
-                                                                className="bg-red-500 hover:bg-red-600"
-                                                            >
-                                                                Delete
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
+                            ))}
                         </TableBody>
                     </Table>
                 </div>

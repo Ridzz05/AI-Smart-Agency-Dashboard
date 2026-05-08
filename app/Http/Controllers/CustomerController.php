@@ -8,10 +8,21 @@ use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $search = $request->input('search');
+        
+        $customers = Customer::when($search, function($query, $search) {
+            $query->where('name', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('phone', 'like', "%{$search}%");
+        })
+        ->latest()
+        ->get();
+
         return Inertia::render('customers/index', [
-            'customers' => Customer::latest()->get(),
+            'customers' => $customers,
+            'filters' => $request->only(['search']),
         ]);
     }
 

@@ -1,16 +1,15 @@
 "use client"
 
 import * as React from "react"
-import {
-  AudioWaveform,
-  Command,
-  Frame, Home,
-  LifeBuoy,
-  Map,
-  PieChart,
-  Send,
-  SquareTerminal,
-} from "lucide-react"
+import { 
+    House, 
+    UsersThree, 
+    Kanban, 
+    Receipt, 
+    MagicWand, 
+    Question, 
+    Buildings 
+} from "@phosphor-icons/react"
 
 import { NavMain } from "@/components/nav-main"
 import { NavProjects } from "@/components/nav-projects"
@@ -38,44 +37,44 @@ const data = {
   },
   teams: [
     {
-      name: "AI-Smart-Agency-Dashboard",
-      logo: Command,
-      plan: "Project Kita",
+      name: "AdminCRM Kita",
+      logo: Buildings,
+      plan: "Agency Plan",
     },
   ],
   navMain: [
     {
       title: "Dashboard",
       url: route('dashboard'),
-      icon: Home,
+      icon: House,
       isActive: true,
     },
     {
       title: "Customers",
       url: route('customers.index'),
-      icon: SquareTerminal,
+      icon: UsersThree,
     },
     {
       title: "Projects",
       url: route('projects.index'),
-      icon: Frame,
+      icon: Kanban,
     },
     {
       title: "Transactions",
       url: route('transactions.index'),
-      icon: PieChart,
+      icon: Receipt,
     },
     {
       title: "AI Assistant",
       url: route('ai.index'),
-      icon: Send,
+      icon: MagicWand,
     },
   ],
   navSecondary: [
     {
       title: "Support",
       url: "#",
-      icon: LifeBuoy,
+      icon: Question,
     },
   ],
 }

@@ -1,5 +1,5 @@
 import AuthenticatedLayout from '@/layouts/authenticated-layout';
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm, router } from '@inertiajs/react';
 import { PageProps } from '@/types';
 import {
     Table,
@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Edit } from "lucide-react"
+import { Plus, Trash2, Edit, Search } from "lucide-react"
 import {
     Dialog,
     DialogContent,
@@ -47,8 +47,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select"
-import { useForm } from "@inertiajs/react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 
 interface Customer {
     id: number;
@@ -59,7 +58,11 @@ interface Customer {
     status: 'Lead' | 'Active' | 'Past';
 }
 
-export default function Index({ customers }: PageProps<{ customers: Customer[] }>) {
+export default function Index({ customers, filters }: PageProps<{ 
+    customers: Customer[],
+    filters: { search?: string }
+}>) {
+    const [search, setSearch] = useState(filters.search || '');
     const [isOpen, setIsOpen] = useState(false);
     const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
 
@@ -70,6 +73,19 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
         address: '',
         status: 'Lead' as Customer['status'],
     });
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            if (search !== (filters.search || '')) {
+                router.get(route('customers.index'), { search }, {
+                    preserveState: true,
+                    replace: true
+                });
+            }
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     const onSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -113,20 +129,34 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
         >
             <Head title="Customers" />
 
-            <div className="flex flex-col gap-4 p-4 pt-0">
-                <div className="flex items-center justify-between">
-                    <h1 className="text-2xl font-bold tracking-tight">Customer Management</h1>
-                    
-                    <Dialog open={isOpen} onOpenChange={(open) => {
-                        setIsOpen(open);
-                        if (!open) {
-                            setEditingCustomer(null);
-                            reset();
-                            clearErrors();
-                        }
-                    }}>
+            <div className="flex flex-col gap-6 p-4 md:p-6 pt-0">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h1 className="text-2xl font-bold tracking-tight">Customers</h1>
+                        <p className="text-sm text-muted-foreground">Manage your client relationships and leads.</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 items-center">
+                        <div className="relative w-full sm:w-64">
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                            <Input 
+                                placeholder="Search customers..." 
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                className="pl-9"
+                            />
+                        </div>
+                        
+                        <Dialog open={isOpen} onOpenChange={(open) => {
+                            setIsOpen(open);
+                            if (!open) {
+                                setEditingCustomer(null);
+                                reset();
+                                clearErrors();
+                            }
+                        }}>
                         <DialogTrigger asChild>
-                            <Button>
+                            <Button className="w-full sm:w-auto">
                                 <Plus className="mr-2 h-4 w-4" /> Add Customer
                             </Button>
                         </DialogTrigger>
@@ -207,8 +237,69 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
                         </DialogContent>
                     </Dialog>
                 </div>
+            </div>
 
-                <div className="rounded-md border bg-card text-card-foreground shadow-sm">
+                {/* Mobile View: Cards */}
+                <div className="grid gap-4 md:hidden">
+                    {customers.length === 0 ? (
+                        <div className="p-8 text-center border rounded-lg bg-card text-muted-foreground">
+                            No customers found.
+                        </div>
+                    ) : (
+                        customers.map((customer) => (
+                            <div key={customer.id} className="p-4 border rounded-lg bg-card shadow-sm space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="font-bold text-lg">{customer.name}</h3>
+                                        <p className="text-sm text-muted-foreground">{customer.email}</p>
+                                    </div>
+                                    <Badge variant={
+                                        customer.status === 'Active' ? 'default' :
+                                        customer.status === 'Lead' ? 'secondary' : 'outline'
+                                    }>
+                                        {customer.status}
+                                    </Badge>
+                                </div>
+                                
+                                <div className="text-sm">
+                                    <p className="text-muted-foreground">Phone</p>
+                                    <p className="font-medium">{customer.phone || '-'}</p>
+                                </div>
+
+                                <div className="flex justify-end gap-2 pt-2 border-t">
+                                    <Button variant="outline" size="sm" onClick={() => onEdit(customer)}>
+                                        <Edit className="h-4 w-4 mr-2" /> Edit
+                                    </Button>
+                                    
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="outline" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                                <Trash2 className="h-4 w-4" />
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent className="w-[90vw] max-w-md rounded-lg">
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Delete Customer?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    Are you sure you want to delete <strong>{customer.name}</strong>?
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => onDelete(customer.id)} className="bg-red-500">
+                                                    Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+
+                {/* Desktop View: Table */}
+                <div className="hidden md:block rounded-md border bg-card text-card-foreground shadow-sm overflow-hidden">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -220,66 +311,50 @@ export default function Index({ customers }: PageProps<{ customers: Customer[] }
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {customers.length === 0 ? (
-                                <TableRow>
-                                    <TableCell colSpan={5} className="h-24 text-center">
-                                        No customers found.
+                            {customers.map((customer) => (
+                                <TableRow key={customer.id}>
+                                    <TableCell className="font-medium">{customer.name}</TableCell>
+                                    <TableCell>{customer.email}</TableCell>
+                                    <TableCell>{customer.phone || '-'}</TableCell>
+                                    <TableCell>
+                                        <Badge variant={
+                                            customer.status === 'Active' ? 'default' :
+                                            customer.status === 'Lead' ? 'secondary' : 'outline'
+                                        }>
+                                            {customer.status}
+                                        </Badge>
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        <div className="flex justify-end gap-2">
+                                            <Button variant="ghost" size="icon" onClick={() => onEdit(customer)}>
+                                                <Edit className="h-4 w-4" />
+                                            </Button>
+                                            
+                                            <AlertDialog>
+                                                <AlertDialogTrigger asChild>
+                                                    <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
+                                                        <Trash2 className="h-4 w-4" />
+                                                    </Button>
+                                                </AlertDialogTrigger>
+                                                <AlertDialogContent>
+                                                    <AlertDialogHeader>
+                                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                                        <AlertDialogDescription>
+                                                            Delete <strong>{customer.name}</strong>?
+                                                        </AlertDialogDescription>
+                                                    </AlertDialogHeader>
+                                                    <AlertDialogFooter>
+                                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                        <AlertDialogAction onClick={() => onDelete(customer.id)} className="bg-red-500">
+                                                            Delete
+                                                        </AlertDialogAction>
+                                                    </AlertDialogFooter>
+                                                </AlertDialogContent>
+                                            </AlertDialog>
+                                        </div>
                                     </TableCell>
                                 </TableRow>
-                            ) : (
-                                customers.map((customer) => (
-                                    <TableRow key={customer.id}>
-                                        <TableCell className="font-medium">{customer.name}</TableCell>
-                                        <TableCell>{customer.email}</TableCell>
-                                        <TableCell>{customer.phone || '-'}</TableCell>
-                                        <TableCell>
-                                            <Badge variant={
-                                                customer.status === 'Active' ? 'default' :
-                                                customer.status === 'Lead' ? 'secondary' : 'outline'
-                                            }>
-                                                {customer.status}
-                                            </Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <Button 
-                                                    variant="ghost" 
-                                                    size="icon"
-                                                    onClick={() => onEdit(customer)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                
-                                                <AlertDialog>
-                                                    <AlertDialogTrigger asChild>
-                                                        <Button variant="ghost" size="icon" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-                                                            <Trash2 className="h-4 w-4" />
-                                                        </Button>
-                                                    </AlertDialogTrigger>
-                                                    <AlertDialogContent>
-                                                        <AlertDialogHeader>
-                                                            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                                            <AlertDialogDescription>
-                                                                This action cannot be undone. This will permanently delete the customer
-                                                                <strong> {customer.name}</strong> and all associated data.
-                                                            </AlertDialogDescription>
-                                                        </AlertDialogHeader>
-                                                        <AlertDialogFooter>
-                                                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                            <AlertDialogAction 
-                                                                onClick={() => onDelete(customer.id)}
-                                                                className="bg-red-500 hover:bg-red-600"
-                                                            >
-                                                                Delete
-                                                            </AlertDialogAction>
-                                                        </AlertDialogFooter>
-                                                    </AlertDialogContent>
-                                                </AlertDialog>
-                                            </div>
-                                        </TableCell>
-                                    </TableRow>
-                                ))
-                            )}
+                            ))}
                         </TableBody>
                     </Table>
                 </div>

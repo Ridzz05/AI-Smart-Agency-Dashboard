@@ -1,4 +1,4 @@
-import { PropsWithChildren, ReactNode } from "react";
+import { PropsWithChildren, ReactNode, useState, useEffect } from "react";
 import {AppSidebar} from "@/components/app-sidebar";
 import {SidebarInset, SidebarProvider, SidebarTrigger} from "@/components/ui/sidebar";
 import {Separator} from "@/components/ui/separator";
@@ -8,6 +8,8 @@ import {
     BreadcrumbList, BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import AppearanceDropdown from "@/components/appearance-dropdown";
+import { usePage } from "@inertiajs/react";
+import { Toast } from "@/components/ui/toast-simple";
 
 export default function AuthenticatedLayout({
     header,
@@ -15,12 +17,23 @@ export default function AuthenticatedLayout({
 }: PropsWithChildren<{
     header?: ReactNode;
 }>) {
+    const { flash } = usePage().props as any;
+    const [toast, setToast] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
+
+    useEffect(() => {
+        if (flash.success) {
+            setToast({ message: flash.success, type: 'success' });
+        } else if (flash.error) {
+            setToast({ message: flash.error, type: 'error' });
+        }
+    }, [flash]);
+
     return (
         <SidebarProvider>
             <AppSidebar />
 
             <SidebarInset>
-                <header className="sticky top-0 bg-background flex h-16 shrink-0 items-center gap-2 justify-between p-4 border-b md:border-none md:rounded-xl">
+                <header className="sticky top-0 bg-background/80 backdrop-blur-md z-50 flex h-16 shrink-0 items-center gap-2 justify-between p-4 border-b md:border-none md:rounded-xl">
                     <div className="flex items-center gap-2">
                         <SidebarTrigger className="-ml-1" />
                         <Separator orientation="vertical" className="mr-2 h-4" />
@@ -41,6 +54,14 @@ export default function AuthenticatedLayout({
                     {children}
                 </main>
             </SidebarInset>
+
+            {toast && (
+                <Toast 
+                    message={toast.message} 
+                    type={toast.type} 
+                    onClose={() => setToast(null)} 
+                />
+            )}
         </SidebarProvider>
     );
 }

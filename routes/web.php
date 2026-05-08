@@ -15,4 +15,5 @@ Route::resource('projects', ProjectController::class);
 Route::resource('transactions', TransactionController::class);
 
 Route::get('/ai', [AIController::class, 'index'])->name('ai.index');
+Route::get('/ai/insight', [AIController::class, 'getInsight'])->name('ai.insight');
 Route::post('/ai/chat', [AIController::class, 'chat'])->name('ai.chat');

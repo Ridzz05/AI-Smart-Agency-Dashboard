@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { CaretRight } from "@phosphor-icons/react"
 
 import {
   Collapsible,
@@ -26,7 +26,7 @@ export function NavMain({
   items: {
     title: string
     url: string
-    icon: LucideIcon
+    icon: any
     isActive?: boolean
     items?: {
       title: string
@@ -43,7 +43,7 @@ export function NavMain({
             <SidebarMenuItem>
               <SidebarMenuButton asChild tooltip={item.title}>
                 <Link href={item.url}>
-                  <item.icon />
+                  <item.icon weight="light" />
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
@@ -51,7 +51,7 @@ export function NavMain({
                 <>
                   <CollapsibleTrigger asChild>
                     <SidebarMenuAction className="data-[state=open]:rotate-90">
-                      <ChevronRight />
+                      <CaretRight weight="bold" />
                       <span className="sr-only">Toggle</span>
                     </SidebarMenuAction>
                   </CollapsibleTrigger>
