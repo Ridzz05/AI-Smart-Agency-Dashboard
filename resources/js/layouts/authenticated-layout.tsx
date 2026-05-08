@@ -10,6 +10,7 @@ import {
 import AppearanceDropdown from "@/components/appearance-dropdown";
 import { usePage } from "@inertiajs/react";
 import { Toast } from "@/components/ui/toast-simple";
+import SupportWidget from "@/components/support-widget";
 
 export default function AuthenticatedLayout({
     header,
@@ -62,6 +63,7 @@ export default function AuthenticatedLayout({
                     onClose={() => setToast(null)} 
                 />
             )}
+            <SupportWidget />
         </SidebarProvider>
     );
 }

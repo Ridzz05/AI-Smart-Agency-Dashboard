@@ -57,43 +57,26 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
     return (
         <AuthenticatedLayout>
             <Head title="AI Assistant" />
-            <div className="flex flex-col h-[calc(100vh-65px)] lg:h-[calc(100vh-100px)] w-full max-w-5xl mx-auto">
-                {/* Header Section */}
-                <div className="flex items-center justify-between px-6 py-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-primary/10 p-2 rounded-xl">
-                            <Robot weight="light" className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                            <h1 className="text-lg font-bold leading-none">KitaAI Assistant</h1>
-                            <p className="text-xs text-muted-foreground mt-1">Sistem Cerdas AI-Smart-Agency-Dashboard</p>
-                        </div>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <div className="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></div>
-                        <span className="text-xs font-medium text-muted-foreground">AI Online</span>
-                    </div>
-                </div>
-                
+            <div className="flex flex-col h-[calc(100vh-56px)] lg:h-[calc(100vh-64px)] w-full max-w-5xl mx-auto overflow-hidden">
                 {/* Chat Messages Area */}
                 <div className="flex-1 overflow-hidden bg-background">
-                    <ScrollArea className="h-full px-3 md:px-6 py-6" ref={scrollRef}>
-                        <div className="space-y-6 w-full max-w-4xl mx-auto">
+                    <ScrollArea className="h-full px-2 md:px-6 py-4 md:py-6" ref={scrollRef}>
+                        <div className="space-y-4 md:space-y-6 w-full max-w-4xl mx-auto">
                             {messages.map((msg, i) => (
                                 <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                                     <div className={`flex gap-2 md:gap-4 max-w-[95%] md:max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : ''}`}>
-                                        <Avatar className={`h-9 w-9 border-2 ${msg.role === 'assistant' ? 'border-primary/20' : 'border-secondary/20'}`}>
+                                        <Avatar className="h-8 w-8 md:h-9 md:w-9 border-2 border-primary/10">
                                             {msg.role === 'assistant' ? (
                                                 <AvatarFallback className="bg-primary text-primary-foreground">
-                                                    <Robot weight="bold" className="h-5 w-5" />
+                                                    <Robot weight="bold" className="h-4 w-4 md:h-5 md:w-5" />
                                                 </AvatarFallback>
                                             ) : (
                                                 <AvatarFallback className="bg-secondary text-secondary-foreground">
-                                                    <User weight="bold" className="h-5 w-5" />
+                                                    <User weight="bold" className="h-4 w-4 md:h-5 md:w-5" />
                                                 </AvatarFallback>
                                             )}
                                         </Avatar>
-                                        <div className={`relative rounded-2xl px-5 py-3.5 text-sm shadow-sm leading-relaxed ${
+                                        <div className={`relative rounded-2xl px-4 py-2.5 md:px-5 md:py-3.5 text-sm shadow-sm leading-relaxed ${
                                             msg.role === 'user' 
                                             ? 'bg-primary text-black font-medium rounded-tr-none' 
                                             : 'bg-muted/50 border rounded-tl-none'
@@ -129,22 +112,22 @@ export default function AIIndex({ initialMessages = [] }: { initialMessages?: Me
                 </div>
 
                 {/* Input Section */}
-                <div className="px-3 md:px-6 py-4 md:py-6 border-t bg-background/95 backdrop-blur">
+                <div className="px-2 md:px-6 py-3 md:py-6 border-t bg-background/95 backdrop-blur">
                     <div className="max-w-4xl mx-auto">
                         <form onSubmit={sendMessage} className="relative flex items-center">
                             <Input 
-                                placeholder="Tanyakan apa saja tentang bisnis Anda..." 
+                                placeholder="Tanyakan bisnis Anda..." 
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
                                 disabled={isLoading}
-                                className="pr-16 h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/30 shadow-inner"
+                                className="pr-14 h-12 md:h-14 rounded-2xl bg-muted/30 border-none focus-visible:ring-1 focus-visible:ring-primary/30 shadow-inner text-sm md:text-base"
                             />
                             <div className="absolute right-2 flex items-center gap-1">
                                 <Button 
                                     type="submit" 
                                     size="icon"
                                     disabled={isLoading || !input.trim()} 
-                                    className="h-10 w-10 rounded-xl transition-all active:scale-95"
+                                    className="h-9 w-9 md:h-10 md:w-10 rounded-xl transition-all active:scale-95"
                                 >
                                     {isLoading ? <CircleNotch weight="bold" className="h-4 w-4 animate-spin" /> : <PaperPlaneTilt weight="bold" className="h-4 w-4" />}
                                 </Button>

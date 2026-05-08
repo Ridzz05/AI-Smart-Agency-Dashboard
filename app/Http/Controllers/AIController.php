@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
@@ -42,7 +43,7 @@ class AIController extends Controller
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
             ])->post('https://openrouter.ai/api/v1/chat/completions', [
-                'model' => 'google/gemini-2.0-flash-lite-001:free',
+                'model' => 'poolside/laguna-xs.2:free',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -64,7 +65,8 @@ class AIController extends Controller
                 ]);
             }
 
-            return response()->json(['insight' => 'Gagal mengambil insight saat ini.']);
+            Log::error('OpenRouter Insight Error: ' . $response->body());
+            return response()->json(['insight' => 'Gagal mengambil insight saat ini. Cek log sistem.']);
 
         } catch (\Exception $e) {
             return response()->json(['insight' => 'Error: ' . $e->getMessage()]);
@@ -102,7 +104,7 @@ class AIController extends Controller
                 'HTTP-Referer' => config('app.url'),
                 'X-Title' => config('app.name'),
             ])->post('https://openrouter.ai/api/v1/chat/completions', [
-                'model' => 'google/gemini-2.0-flash-lite-001:free',
+                'model' => 'poolside/laguna-xs.2:free',
                 'messages' => [
                     [
                         'role' => 'system',
@@ -113,7 +115,7 @@ class AIController extends Controller
                         'content' => $request->message
                     ]
                 ],
-                'max_tokens' => 2048,
+                'max_tokens' => 10000,
                 'temperature' => 0.7,
             ]);
 
@@ -131,6 +133,7 @@ class AIController extends Controller
                 return response()->json($data);
             }
 
+            Log::error('OpenRouter Chat Error: ' . $response->body());
             return response()->json([
                 'error' => 'Failed to communicate with AI: ' . $response->body()
             ], 500);
