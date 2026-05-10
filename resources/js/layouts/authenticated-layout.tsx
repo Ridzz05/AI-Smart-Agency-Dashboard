@@ -34,7 +34,7 @@ export default function AuthenticatedLayout({
             <AppSidebar />
 
             <SidebarInset>
-                <header className="sticky top-0 bg-background/80 backdrop-blur-md z-50 flex h-16 shrink-0 items-center gap-2 justify-between p-4 border-b md:border-none md:rounded-xl">
+                <header className="sticky top-0 bg-background/60 backdrop-blur-xl z-50 flex h-16 shrink-0 items-center gap-2 justify-between p-4 px-6 md:rounded-t-xl transition-all border-b border-zinc-100/50 dark:border-zinc-800/50">
                     <div className="flex items-center gap-2">
                         <SidebarTrigger className="-ml-1" />
                         <Separator orientation="vertical" className="mr-2 h-4" />

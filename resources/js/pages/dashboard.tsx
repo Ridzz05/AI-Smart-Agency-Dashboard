@@ -76,7 +76,7 @@ export default function Dashboard({
 
             <div className="flex flex-col gap-8 p-4 md:p-8 pt-6">
                 {/* Greeting Hero Widget */}
-                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-8 text-black shadow-2xl border border-amber-300/20">
+                <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-600 p-8 text-black shadow-lg border border-white/20">
                     <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-8">
                         <div className="max-w-2xl">
                             <div className="flex items-center gap-2 mb-4">
@@ -92,7 +92,7 @@ export default function Dashboard({
                                 Ada <span className="font-bold">{stats?.totalProjects || 0} proyek</span> yang membutuhkan perhatian Anda.
                             </p>
                             <div className="mt-8 flex flex-wrap gap-4">
-                                <Link href={route('projects.index')} className="group inline-flex items-center justify-center rounded-xl bg-black px-6 py-3 text-sm font-bold text-amber-400 transition-all hover:bg-slate-900 shadow-xl shadow-black/20 active:scale-95">
+                                <Link href={route('projects.index')} className="group inline-flex items-center justify-center rounded-xl bg-black px-6 py-3 text-sm font-bold text-amber-400 transition-all hover:bg-slate-900 shadow-md active:scale-95">
                                     <Plus weight="bold" className="mr-2 h-5 w-5 transition-transform group-hover:rotate-90" /> Proyek Baru
                                 </Link>
                                 <Link href={route('transactions.index')} className="inline-flex items-center justify-center rounded-xl bg-black/5 px-6 py-3 text-sm font-bold text-black backdrop-blur-md border border-black/10 transition-all hover:bg-black/10 active:scale-95">
@@ -104,7 +104,7 @@ export default function Dashboard({
                             <div className="flex -space-x-6">
                                 {['Ki', 'Jo', 'Na'].map((name, i) => (
                                     <div key={name} 
-                                         className={`h-20 w-20 rounded-full border-4 border-background flex items-center justify-center text-black font-black text-2xl shadow-2xl transform hover:-translate-y-2 transition-transform cursor-pointer
+                                         className={`h-20 w-20 rounded-full border-4 border-background flex items-center justify-center text-black font-black text-2xl shadow-lg transform hover:-translate-y-2 transition-transform cursor-pointer
                                          ${i === 0 ? 'bg-amber-400' : i === 1 ? 'bg-amber-500' : 'bg-amber-300'}`}>
                                         {name}
                                     </div>
@@ -122,7 +122,7 @@ export default function Dashboard({
                 </div>
 
                 {/* AI Insight Widget */}
-                <Card className="border-none shadow-xl bg-gradient-to-r from-amber-50 to-amber-100/30 dark:from-zinc-900/50 dark:to-zinc-900/20 overflow-hidden relative border-l-4 border-l-amber-400">
+                <Card className="border border-amber-200/50 shadow-sm bg-gradient-to-r from-amber-50 to-amber-100/30 dark:from-zinc-900/50 dark:to-zinc-900/20 overflow-hidden relative border-l-4 border-l-amber-400">
                     <div className="absolute top-0 right-0 p-4 opacity-10">
                         <Sparkle weight="light" className="h-24 w-24 text-amber-600 dark:text-amber-400" />
                     </div>
@@ -156,7 +156,7 @@ export default function Dashboard({
                         { title: "Total Revenue", value: `Rp ${new Intl.NumberFormat('id-ID').format(stats?.totalRevenue || 0)}`, icon: CurrencyDollar, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Verified payments" },
                         { title: "Engagement Rate", value: "84%", icon: TrendUp, color: "text-amber-600", bg: "bg-amber-100/50", desc: "Up 12% from last month" }
                     ].map((item, i) => (
-                        <Card key={i} className="group hover:shadow-2xl transition-all duration-300 border-none bg-card shadow-lg">
+                        <Card key={i} className="group hover:shadow-md transition-all duration-300 border border-zinc-100 dark:border-zinc-800 bg-card shadow-sm">
                             <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                                 <CardTitle className="text-sm font-bold text-muted-foreground uppercase tracking-wider">{item.title}</CardTitle>
                                 <div className={`p-2 rounded-xl ${item.bg} ${item.color} group-hover:scale-110 transition-transform`}>
@@ -174,7 +174,7 @@ export default function Dashboard({
                 </div>
 
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-7">
-                    <Card className="lg:col-span-4 border-none shadow-xl overflow-hidden">
+                    <Card className="lg:col-span-4 border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
                         <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b pb-6">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -227,7 +227,7 @@ export default function Dashboard({
                         </CardContent>
                     </Card>
 
-                    <Card className="lg:col-span-3 border-none shadow-xl">
+                    <Card className="lg:col-span-3 border border-zinc-100 dark:border-zinc-800 shadow-sm">
                         <CardHeader className="border-b pb-6">
                             <CardTitle className="text-xl font-bold">Recent Pulse</CardTitle>
                             <CardDescription>Live updates from your team and clients</CardDescription>
@@ -273,7 +273,7 @@ export default function Dashboard({
                     </Card>
                 </div>
                 
-                <Card className="border-none shadow-xl overflow-hidden">
+                <Card className="border border-zinc-100 dark:border-zinc-800 shadow-sm overflow-hidden">
                     <CardHeader className="bg-slate-50/50 dark:bg-slate-900/50 border-b">
                         <CardTitle className="text-xl font-bold">Project Allocation</CardTitle>
                         <CardDescription>How your team's energy is distributed</CardDescription>
