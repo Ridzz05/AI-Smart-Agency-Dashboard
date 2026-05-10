@@ -24,7 +24,7 @@
         --destructive-foreground: 60 9.1% 97.8%;
         --border: 20 5.9% 90%;
         --input: 20 5.9% 90%;
-        --ring: 24.6 95% 53.1%;
+        --ring: 47.9 95.8% 53.1%;
         --radius: 0.75rem;
         --sidebar-background: 0 0% 100%;
         --sidebar-foreground: 24 9.8% 10%;
@@ -33,7 +33,7 @@
         --sidebar-accent: 60 4.8% 95.9%;
         --sidebar-accent-foreground: 24 9.8% 10%;
         --sidebar-border: 20 5.9% 90%;
-        --sidebar-ring: 24.6 95% 53.1%;
+        --sidebar-ring: 47.9 95.8% 53.1%;
     }
 
     .dark {
@@ -73,6 +73,10 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground antialiased;
+    }
+
+    :focus-visible {
+        outline: none !important;
     }
 }
